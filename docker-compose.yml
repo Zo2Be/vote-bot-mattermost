@@ -1,0 +1,31 @@
+services:
+  mattermost:
+    image: mattermost/mattermost-preview
+    container_name: mattermost
+    ports:
+      - "8065:8065"
+    environment:
+      MM_SERVICESETTINGS_ENABLELOCALMODE: "true"
+    networks:
+      - dbnet
+    depends_on:
+      - tarantool
+
+  tarantool:
+    image: tarantool/tarantool:latest
+    container_name: tarantool
+    command: tarantool /opt/tarantool/init.lua
+    ports:
+      - "3301:3301"
+    volumes:
+      - tarantool-data:/opt/data
+      - ./tarantool.lua:/opt/tarantool/init.lua
+    networks:
+      - dbnet
+
+networks:
+  dbnet:
+    driver: bridge
+
+volumes:
+  tarantool-data:
